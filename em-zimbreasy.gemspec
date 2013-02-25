@@ -4,7 +4,7 @@ require File.expand_path('../lib/em-zimbreasy/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Jordan Prince", "Christopher Rankin"]
   gem.email         = ["crankin@pangeaequity.com"]
-  gem.description   = %q{{A no-nonsense async gem for the nonsensical Zimbra API.}
+  gem.description   = %q{A no-nonsense async gem for the nonsensical Zimbra API.}
   gem.summary       = %q{A no-nonsense async gem for the nonsensical Zimbra API.}
   gem.homepage      = ""
 
@@ -16,7 +16,6 @@ Gem::Specification.new do |gem|
   gem.version       = Em::Zimbreasy::VERSION
 
   gem.add_dependency 'test-unit'
-  gem.add_dependency 'savon', :git => 'git://github.com/rankin/savon.git'
 	gem.add_dependency 'em-http-request'
 	gem.add_dependency 'em-synchrony'
   gem.add_dependency 'nokogiri'

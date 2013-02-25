@@ -45,7 +45,7 @@ module Em
         )
    
         array = [] 
-        return response[:get_free_busy_response][:usr].reject { |k,v| k if k == :@id }.inject(Hash.new) do |hash, entry|
+        return response.body[:get_free_busy_response][:usr].reject { |k,v| k if k == :@id }.inject(Hash.new) do |hash, entry|
           if entry[1].is_a?(Array)
             array_of_times = entry[1].inject(Array.new) do |times_array, times_entry|
               times_array << { :s => Time.at(times_entry[:@s].to_f/1000.0), :e => Time.at(times_entry[:@e].to_f/1000.0) }
@@ -67,7 +67,7 @@ module Em
           {}
         )
 
-        comp = response[:get_appointment_response][:appt][:inv][:comp]
+        comp = response.body[:get_appointment_response][:appt][:inv][:comp]
 
         hash = {
           :start_time => comp[:s][:@d], 
@@ -90,12 +90,12 @@ module Em
           {}
         )
 
-        return [] if response[:get_appt_summaries_response][:appt].nil?
+        return [] if response.body[:get_appt_summaries_response][:appt].nil?
 
         appts = []
 
-        if response[:get_appt_summaries_response][:appt].is_a?(Array)
-          response[:get_appt_summaries_response][:appt].each do |appt|
+        if response.body[:get_appt_summaries_response][:appt].is_a?(Array)
+          response.body[:get_appt_summaries_response][:appt].each do |appt|
             
             inst = appt[:inst]
                       
@@ -108,7 +108,7 @@ module Em
             appts << to_ical(hash)
           end
         else 
-          appt = response[:get_appt_summaries_response][:appt]
+          appt = response.body[:get_appt_summaries_response][:appt]
 
           inst = appt[:inst]
 
@@ -148,7 +148,7 @@ module Em
           :m => {
             :su => subject,
             :mp => {
-              :content => content
+              :content => content,
               :attributes! => { :ct => "text/plain" }                
             }
           }
@@ -197,8 +197,8 @@ module Em
         }
 
         message[:m][:inv][:s] = { :d => params[:start_time],  :tz => params[:tz] } if params[:start_time]
-        message[:m][:inv][:s] = { :d => params[:end_time],    :tz => params[:tz] } if params[:end_time]
-        mesage[:m][:e] = []
+        message[:m][:inv][:e] = { :d => params[:end_time],    :tz => params[:tz] } if params[:end_time]
+        message[:m][:e] = []
         params[:appointee_emails].each do |email| 
           message[:m][:e].push({ :a => email, :t => "t" })
         end
