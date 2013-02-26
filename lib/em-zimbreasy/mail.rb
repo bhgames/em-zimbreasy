@@ -17,18 +17,18 @@ module Em
       #:subject(opt)
       #:desc(opt)
       #:mime_type(opt)
+      #:is_org(opt) boolean is organizer or not
       #Returns Appt's Inv id as UID in an i_cal text.. Is normally a number like 140-141,
       #the first number is the appt id, which you need for getting.
       def create_appointment(params)
         params[:start_time] = Em::Zimbreasy.zimbra_date(params[:start_time]) if params[:start_time]
         params[:end_time] = Em::Zimbreasy.zimbra_date(params[:end_time]) if params[:end_time]
-
         response = account.make_call(
           :CreateAppointmentRequest, 
           { "xmlns" => @zimbra_namespace, "echo" => (params[:echo] || "0")},
           appointment_hash(params)
         ) 
-
+        pp response.body
         params.merge!({:appt_id => response.body[:create_appointment_response][:@inv_id]})
 
         to_ical(params)
@@ -190,15 +190,27 @@ module Em
             :inv => {
               :mp => { :ct =>(params[:mime_type] || "text/plain") },
               :desc => params[:desc],
-              :attributes! => { :rsvp => "1", :compNum => "0", :method => "none", :name => params[:name]  }
+              :attributes! => { :rsvp => "0", :compNum => "0", :method => "none", :name => params[:name]  }
             },
-            :attributes! => { :su => params[:subject] }
+            :attributes! => { "su" => params[:subject] }
           }
         }
 
         message[:m][:inv][:s] = { :d => params[:start_time],  :tz => params[:tz] } if params[:start_time]
         message[:m][:inv][:e] = { :d => params[:end_time],    :tz => params[:tz] } if params[:end_time]
         message[:m][:e] = []
+        message[:m][:inv][:comp] = {
+          :s =>  { :d => params[:start_time],  :tz => params[:tz] },
+          :attributes! => { :method => "none", :compNum => 1, :rsvp => "0" }
+        }
+        message[:m][:inv][:comp][:e] = { :d => params[:end_time],    :tz => params[:tz] }
+
+       # message[:m][:inv][:comp][:at] = {
+       #   :a => "crankin@pangeaequity.com", :ptst => "AC", :rsvp => "0"
+       # }
+       # message[:m][:inv][:at] = {
+       #   :a => "crankin@pangeaequity.com", :ptst => "AC", :rsvp => "0"
+       # }
         params[:appointee_emails].each do |email| 
           message[:m][:e].push({ :a => email, :t => "t" })
         end
