@@ -193,6 +193,7 @@ module Em
             :inv => {
               :mp => { :ct =>(params[:mime_type] || "text/plain") },
               :desc => params[:desc],
+              :comment => params[:desc],
               :@rsvp => "0", 
               :@compNum => "0", 
               :@method => "none", 
@@ -208,7 +209,7 @@ module Em
         message[:m][:inv][:s] = { :d => params[:start_time],  :tz => params[:tz] } if params[:start_time]
         message[:m][:inv][:e] = { :d => params[:end_time],    :tz => params[:tz] } if params[:end_time]
 
-        message[:m][:inv][:comp] = {
+        message[:m][:inv][:comp] = i{
           :s =>  { :d => params[:start_time],  :tz => params[:tz] },
           :desc => params[:desc],
           :@noBlob => 1,
