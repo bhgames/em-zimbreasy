@@ -18,6 +18,7 @@ module Em
       #:desc(opt)
       #:mime_type(opt)
       #:is_org(opt) boolean is organizer or not
+      #:or -> organizer email
       #Returns Appt's Inv id as UID in an i_cal text.. Is normally a number like 140-141,
       #the first number is the appt id, which you need for getting.
       def create_appointment(params)
@@ -28,7 +29,6 @@ module Em
           { "xmlns" => @zimbra_namespace, "echo" => (params[:echo] || "0")},
           appointment_hash(params)
         ) 
-        pp response.body
         params.merge!({:appt_id => response.body[:create_appointment_response][:@inv_id]})
 
         to_ical(params)
@@ -149,14 +149,17 @@ module Em
             :su => subject,
             :mp => {
               :content => content,
-              :attributes! => { :ct => "text/plain" }                
-            }
+              :@ct => "text/plain"                 
+            },
+            :attributes! => { :e => { :a => [], :t => [] } } 
           }
         }
 
         message[:m][:e] = []
         emails.each do |email|
-          message[:m][:e].push({ :a => email, :t => "t" })
+          message[:m][:e] << ""
+          message[:m][:attributes!][:e][:a].push(email)
+          message[:m][:attributes!][:e][:t].push("t")
         end
 
         response = account.make_call(
@@ -194,35 +197,45 @@ module Em
               :@compNum => "0", 
               :@method => "none", 
               :@name => params[:name],
-              :@isOrg => 1
+              :@isOrg => params[:is_org],
+              :@noBlob => 1
             },
-            :@su => params[:subject]
+            :@su => params[:subject],
+            :attributes! => { :e => { :a => [], :t => [] } }
           }
         }
 
         message[:m][:inv][:s] = { :d => params[:start_time],  :tz => params[:tz] } if params[:start_time]
         message[:m][:inv][:e] = { :d => params[:end_time],    :tz => params[:tz] } if params[:end_time]
-        message[:m][:e] = []
+
         message[:m][:inv][:comp] = {
           :s =>  { :d => params[:start_time],  :tz => params[:tz] },
-          :@method => "none", :@compNum => 1, :@rsvp => "0", :@isOrg => 1 
+          :desc => params[:desc],
+          :@noBlob => 1,
+          :@method => "none", :@compNum => 1, :@rsvp => "0", :@isOrg => params[:is_org],
+          :attributes! => { :at => { :a => [], :rsvp => [], :role => [], :ptst => [], :cutype => [] } } 
         }
+
         message[:m][:inv][:comp][:e] = { :d => params[:end_time],    :tz => params[:tz] }
 
-        message[:m][:inv][:comp][:at] = {
-          :@a => "crankin@pangeaequity.com", :@rsvp => "1", :@role => "REQ", :@ptst => "NE",
-          :@cutype => "IND"
-        }
-        message[:m][:e] = { :@a => "crankin@pangeaequity.com", :@t => "t" }
-       # message[:m][:inv][:at] = {
-       #   :@a => "crankin@pangeaequity.com", :@rsvp => "0"
-       # }
+        message[:m][:inv][:comp][:or] = { :@a => params[:or] }
+        message[:m][:inv][:or] = { :@a => params[:or] } #set organizer
 
-      message[:m][:inv][:comp][:or] = { :@a => "pcore_calendar@pangeaequity.com" }
-      message[:m][:inv][:or] = { :@a => "pcore_calendar@pangeaequity.com" }
-       # params[:appointee_emails].each do |email| 
-       #   message[:m][:e].push({ :a => email, :t => "t" })
-       # end
+        message[:m][:e] = []
+        message[:m][:inv][:comp][:at] = []
+        params[:appointee_emails].each do |email| 
+          
+          message[:m][:e] << ""
+          message[:m][:attributes!][:e][:a].push(email) #set attendees here
+          message[:m][:attributes!][:e][:t].push("t") 
+
+          message[:m][:inv][:comp][:at] << ""
+          message[:m][:inv][:comp][:attributes!][:at][:a].push(email) # also set attendees here
+          message[:m][:inv][:comp][:attributes!][:at][:rsvp].push("1") 
+          message[:m][:inv][:comp][:attributes!][:at][:role].push("REQ") 
+          message[:m][:inv][:comp][:attributes!][:at][:ptst].push("NE") 
+          message[:m][:inv][:comp][:attributes!][:at][:cutype].push("IND") 
+        end
         return message
       end
 
