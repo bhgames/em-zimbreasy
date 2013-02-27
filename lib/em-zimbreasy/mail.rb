@@ -209,7 +209,7 @@ module Em
         message[:m][:inv][:s] = { :d => params[:start_time],  :tz => params[:tz] } if params[:start_time]
         message[:m][:inv][:e] = { :d => params[:end_time],    :tz => params[:tz] } if params[:end_time]
 
-        message[:m][:inv][:comp] = i{
+        message[:m][:inv][:comp] = {
           :s =>  { :d => params[:start_time],  :tz => params[:tz] },
           :desc => params[:desc],
           :@noBlob => 1,
