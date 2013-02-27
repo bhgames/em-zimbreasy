@@ -190,9 +190,13 @@ module Em
             :inv => {
               :mp => { :ct =>(params[:mime_type] || "text/plain") },
               :desc => params[:desc],
-              :attributes! => { :rsvp => "0", :compNum => "0", :method => "none", :name => params[:name]  }
+              :@rsvp => "0", 
+              :@compNum => "0", 
+              :@method => "none", 
+              :@name => params[:name],
+              :@isOrg => 1
             },
-            :attributes! => { "su" => params[:subject] }
+            :@su => params[:subject]
           }
         }
 
@@ -201,19 +205,24 @@ module Em
         message[:m][:e] = []
         message[:m][:inv][:comp] = {
           :s =>  { :d => params[:start_time],  :tz => params[:tz] },
-          :attributes! => { :method => "none", :compNum => 1, :rsvp => "0" }
+          :@method => "none", :@compNum => 1, :@rsvp => "0", :@isOrg => 1 
         }
         message[:m][:inv][:comp][:e] = { :d => params[:end_time],    :tz => params[:tz] }
 
-       # message[:m][:inv][:comp][:at] = {
-       #   :a => "crankin@pangeaequity.com", :ptst => "AC", :rsvp => "0"
-       # }
+        message[:m][:inv][:comp][:at] = {
+          :@a => "crankin@pangeaequity.com", :@rsvp => "1", :@role => "REQ", :@ptst => "NE",
+          :@cutype => "IND"
+        }
+        message[:m][:e] = { :@a => "crankin@pangeaequity.com", :@t => "t" }
        # message[:m][:inv][:at] = {
-       #   :a => "crankin@pangeaequity.com", :ptst => "AC", :rsvp => "0"
+       #   :@a => "crankin@pangeaequity.com", :@rsvp => "0"
        # }
-        params[:appointee_emails].each do |email| 
-          message[:m][:e].push({ :a => email, :t => "t" })
-        end
+
+      message[:m][:inv][:comp][:or] = { :@a => "pcore_calendar@pangeaequity.com" }
+      message[:m][:inv][:or] = { :@a => "pcore_calendar@pangeaequity.com" }
+       # params[:appointee_emails].each do |email| 
+       #   message[:m][:e].push({ :a => email, :t => "t" })
+       # end
         return message
       end
 
