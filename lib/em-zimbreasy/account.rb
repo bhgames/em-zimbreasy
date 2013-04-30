@@ -47,7 +47,7 @@ module Em
         @client ||= Savon.client(
           namespace_identifier: :none,
 				  pretty_print_xml: true, 
-				  log: true, 
+				  log: false, 
 				  endpoint: @endpoint, 
 				  namespace: soap_namespace,
 				  convert_request_keys_to: :none
