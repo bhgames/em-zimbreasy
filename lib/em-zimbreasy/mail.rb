@@ -234,7 +234,7 @@ module Em
           message[:m][:inv][:comp][:attributes!][:at][:a].push(email) # also set attendees here
           message[:m][:inv][:comp][:attributes!][:at][:rsvp].push("1") 
           message[:m][:inv][:comp][:attributes!][:at][:role].push("REQ") 
-          message[:m][:inv][:comp][:attributes!][:at][:ptst].push("NE") 
+          message[:m][:inv][:comp][:attributes!][:at][:ptst].push("AC") 
           message[:m][:inv][:comp][:attributes!][:at][:cutype].push("IND") 
         end
         return message
