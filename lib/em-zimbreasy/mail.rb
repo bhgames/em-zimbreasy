@@ -208,6 +208,8 @@ module Em
 
         message[:m][:inv][:s] = { :d => params[:start_time],  :tz => params[:tz] } if params[:start_time]
         message[:m][:inv][:e] = { :d => params[:end_time],    :tz => params[:tz] } if params[:end_time]
+        message[:m][:inv][:fb] = params[:fb] if params[:fb]
+        message[:m][:inv][:fba] = params[:fba] if params[:fba]
 
         message[:m][:inv][:comp] = {
           :s =>  { :d => params[:start_time],  :tz => params[:tz] },
@@ -216,6 +218,9 @@ module Em
           :@method => "none", :@compNum => 1, :@rsvp => "0", :@isOrg => params[:is_org],
           :attributes! => { :at => { :a => [], :rsvp => [], :role => [], :ptst => [], :cutype => [] } } 
         }
+        
+        message[:m][:inv][:comp][:@fb] = params[:fb] if params[:fb]
+        message[:m][:inv][:comp][:@fb] = params[:fba] if params[:fba]
 
         message[:m][:inv][:comp][:e] = { :d => params[:end_time],    :tz => params[:tz] }
 
