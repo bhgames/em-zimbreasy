@@ -208,8 +208,8 @@ module Em
 
         message[:m][:inv][:s] = { :d => params[:start_time],  :tz => params[:tz] } if params[:start_time]
         message[:m][:inv][:e] = { :d => params[:end_time],    :tz => params[:tz] } if params[:end_time]
-        message[:m][:inv][:fb] = params[:fb] if params[:fb]
-        message[:m][:inv][:fba] = params[:fba] if params[:fba]
+        message[:m][:inv][:@fb] = params[:fb] if params[:fb]
+        message[:m][:inv][:@fba] = params[:fba] if params[:fba]
 
         message[:m][:inv][:comp] = {
           :s =>  { :d => params[:start_time],  :tz => params[:tz] },
@@ -220,7 +220,7 @@ module Em
         }
         
         message[:m][:inv][:comp][:@fb] = params[:fb] if params[:fb]
-        message[:m][:inv][:comp][:@fb] = params[:fba] if params[:fba]
+        message[:m][:inv][:comp][:@fba] = params[:fba] if params[:fba]
 
         message[:m][:inv][:comp][:e] = { :d => params[:end_time],    :tz => params[:tz] }
 
@@ -242,6 +242,7 @@ module Em
           message[:m][:inv][:comp][:attributes!][:at][:ptst].push("AC") 
           message[:m][:inv][:comp][:attributes!][:at][:cutype].push("IND") 
         end
+
         return message
       end
 
